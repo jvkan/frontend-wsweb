@@ -1,0 +1,84 @@
+<!-- src/app/pages/register-payment/register-payment.component.html -->
+<div class="container mt-5" style="max-width: 600px;">
+  <h2 class="mb-4">Register a Payment</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Event Selector -->
+    <div class="mb-3">
+      <label class="form-label">Select Camp Event</label>
+      <select class="form-select" formControlName="eventId">
+        <option [ngValue]="null" disabled>-- Choose an event --</option>
+        <option *ngFor="let e of events" [ngValue]="e.id">
+          {{ e.name }} ({{ e.startDate }} – {{ e.endDate }})
+        </option>
+      </select>
+      <div
+        *ngIf="form.get('eventId')?.invalid && form.get('eventId')?.touched"
+        class="text-danger mt-1"
+      >
+        Event is required.
+      </div>
+    </div>
+
+    <!-- Payment Type -->
+    <div class="mb-3">
+      <label class="form-label">Payment Type</label>
+      <select class="form-select" formControlName="paymentType">
+        <option value="GAS">Gas</option>
+        <option value="FOOD">Food</option>
+        <option value="PERSONAL">Personal</option>
+        <option value="OTHER">Other</option>
+      </select>
+    </div>
+
+    <!-- Amount -->
+    <div class="mb-3">
+      <label class="form-label">Amount (€)</label>
+      <input
+        type="number"
+        class="form-control"
+        formControlName="amount"
+        placeholder="e.g. 20.00"
+        step="0.01"
+        min="0.01"
+      />
+      <div
+        *ngIf="form.get('amount')?.invalid && form.get('amount')?.touched"
+        class="text-danger mt-1"
+      >
+        Valid amount is required.
+      </div>
+    </div>
+
+    <!-- Receipt File Upload -->
+    <div class="mb-3">
+      <label class="form-label">Upload Receipt (JPEG or PNG, max 5MB)</label>
+      <input
+        type="file"
+        class="form-control"
+        (change)="onFileChange($event)"
+        accept="image/jpeg, image/png"
+      />
+      <div
+        *ngIf="form.get('receipt')?.invalid && form.get('receipt')?.touched"
+        class="text-danger mt-1"
+      >
+        Receipt is required.
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="submitting"
+    >
+      <span *ngIf="!submitting">Submit Payment</span>
+      <span *ngIf="submitting" class="spinner-border spinner-border-sm"></span>
+    </button>
+
+    <!-- Success & Error Messages -->
+    <div *ngIf="errorMsg" class="alert alert-danger mt-3">{{ errorMsg }}</div>
+    <div *ngIf="successMsg" class="alert alert-success mt-3">{{ successMsg }}</div>
+  </form>
+</div>

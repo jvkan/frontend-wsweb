@@ -1,0 +1,11 @@
+/* src/app/pages/user-payments/user-payments.component.css */
+
+/* Adjust z-index for the modal backdrop */
+.modal-backdrop {
+  z-index: 1040;
+}
+
+/* Modal itself at a higher z-index */
+.modal {
+  z-index: 1050;
+}

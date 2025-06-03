@@ -1,0 +1,128 @@
+<!-- src/app/pages/event-management/event-management.component.html -->
+
+<div class="container mt-5" style="max-width: 800px;">
+  <h2 class="mb-4">Manage Camp Events</h2>
+
+  <!-- Create Event Form -->
+  <form [formGroup]="form" (ngSubmit)="onCreate()">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Event Name</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="name"
+          placeholder="e.g. Summer Camp 2025"
+        />
+        <div
+          *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
+          class="text-danger mt-1"
+        >
+          Name is required.
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Start Date</label>
+        <input
+          type="date"
+          class="form-control"
+          formControlName="startDate"
+        />
+        <div
+          *ngIf="form.get('startDate')?.invalid && form.get('startDate')?.touched"
+          class="text-danger mt-1"
+        >
+          Required.
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">End Date</label>
+        <input
+          type="date"
+          class="form-control"
+          formControlName="endDate"
+        />
+        <div
+          *ngIf="form.get('endDate')?.invalid && form.get('endDate')?.touched"
+          class="text-danger mt-1"
+        >
+          Required.
+        </div>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Description (optional)</label>
+        <textarea
+          class="form-control"
+          formControlName="description"
+          rows="2"
+        ></textarea>
+      </div>
+      <div class="col-12">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            formControlName="active"
+            id="activeCheck"
+          />
+          <label class="form-check-label" for="activeCheck">
+            Active
+          </label>
+        </div>
+      </div>
+      <div class="col-12">
+        <button
+          type="submit"
+          class="btn btn-primary me-2"
+          [disabled]="loading"
+        >
+          <span *ngIf="!loading">Create Event</span>
+          <span *ngIf="loading" class="spinner-border spinner-border-sm"></span>
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <div *ngIf="errorMsg" class="alert alert-danger mt-3">{{ errorMsg }}</div>
+  <div *ngIf="successMsg" class="alert alert-success mt-3">{{ successMsg }}</div>
+
+  <!-- Existing Events Table -->
+  <h3 class="mt-5">All Events</h3>
+  <div *ngIf="events.length === 0" class="alert alert-info">
+    No events found.
+  </div>
+  <table *ngIf="events.length > 0" class="table table-bordered mt-3">
+    <thead class="table-dark">
+    <tr>
+      <th>Name</th>
+      <th>Dates</th>
+      <th>Active</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let ev of events">
+      <td>{{ ev.name }}</td>
+      <td>{{ ev.startDate }} – {{ ev.endDate }}</td>
+      <td>
+          <span
+            class="badge"
+            [class.bg-success]="ev.active"
+            [class.bg-secondary]="!ev.active"
+          >
+            {{ ev.active ? 'Active' : 'Inactive' }}
+          </span>
+      </td>
+      <td>
+        <button
+          class="btn btn-sm"
+          [ngClass]="ev.active ? 'btn-warning' : 'btn-success'"
+          (click)="toggleActive(ev)"
+        >
+          {{ ev.active ? 'Deactivate' : 'Activate' }}
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

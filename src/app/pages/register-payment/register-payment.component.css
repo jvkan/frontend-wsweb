@@ -1,0 +1,9 @@
+/* src/app/pages/register-payment/register-payment.component.css */
+
+/* Center form on small screens */
+@media (max-width: 576px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

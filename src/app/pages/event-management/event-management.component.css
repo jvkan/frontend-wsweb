@@ -1,0 +1,4 @@
+/* src/app/pages/event-management/event-management.component.css */
+table th, table td {
+  vertical-align: middle;
+}

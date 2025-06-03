@@ -1,0 +1,133 @@
+<!-- src/app/pages/admin-payments/admin-payments.component.html -->
+
+<div class="container mt-5">
+  <h2 class="mb-4">Admin: Manage Payments</h2>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label class="form-label">Select Event</label>
+      <select
+        class="form-select"
+        [(ngModel)]="selectedEventId"
+        (ngModelChange)="onEventChange()"
+      >
+        <option [ngValue]="null" disabled>-- Choose an event --</option>
+        <option *ngFor="let e of events" [ngValue]="e.id">
+          {{ e.name }} ({{ e.startDate }} – {{ e.endDate }})
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+
+  <!-- Summary Section -->
+  <div *ngIf="selectedEventId !== null" class="mb-4">
+    <h4>Summary</h4>
+    <div *ngIf="loadingSummary" class="spinner-border"></div>
+    <div *ngIf="!loadingSummary && summary">
+      <p><strong>Total Overall:</strong> €{{ summary.totalOverall | number:'1.2-2' }}</p>
+      <div class="row">
+        <div class="col-md-3" *ngFor="let type of ['GAS','FOOD','PERSONAL','OTHER']">
+          <div class="card text-center mb-3">
+            <div class="card-body">
+              <h5 class="card-title">{{ type }}</h5>
+              <p class="card-text">
+                €{{ summary.totalsByType[type] | number:'1.2-2' }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payments Table -->
+  <div *ngIf="selectedEventId !== null">
+    <h4>Payments</h4>
+    <div *ngIf="loadingPayments" class="spinner-border"></div>
+    <table *ngIf="!loadingPayments && payments.length > 0" class="table table-striped">
+      <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Type</th>
+        <th>Amount (€)</th>
+        <th>Date</th>
+        <th>Approved</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let p of payments">
+        <td>{{ p.id }}</td>
+        <td>{{ p.user.username }}</td>
+        <td>{{ p.paymentType }}</td>
+        <td>{{ p.amount | number: '1.2-2' }}</td>
+        <td>{{ p.timestamp | date: 'short' }}</td>
+        <td>
+            <span
+              class="badge"
+              [class.bg-success]="p.approved"
+              [class.bg-warning]="!p.approved"
+            >
+              {{ p.approved ? 'Approved' : 'Pending' }}
+            </span>
+        </td>
+        <td>
+          <button
+            class="btn btn-sm btn-outline-primary me-2"
+            (click)="viewReceipt(p)">
+            View Receipt
+          </button>
+          <button
+            *ngIf="!p.approved"
+            class="btn btn-sm btn-success"
+            (click)="approve(p)"
+          >
+            Approve
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!loadingPayments && payments.length === 0" class="alert alert-info">
+      No payments for this event.
+    </div>
+  </div>
+</div>
+
+<!-- Receipt Modal (same as UserPayments) -->
+<div
+  class="modal fade"
+  [class.show]="showModal"
+  [style.display]="showModal ? 'block' : 'none'"
+  tabindex="-1"
+  role="dialog"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Receipt Image</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img
+          *ngIf="modalImageUrl"
+          [src]="modalImageUrl"
+          alt="Receipt"
+          class="img-fluid"
+        />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="showModal"
+    class="modal-backdrop fade show"
+    (click)="closeModal()"
+  ></div>
+</div>

@@ -1,0 +1,91 @@
+<!-- src/app/pages/user-payments/user-payments.component.html -->
+
+<div class="container mt-4">
+  <h2 class="mb-3">My Payments for Event {{ eventId }}</h2>
+
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border"></div>
+  </div>
+
+  <div *ngIf="!loading && errorMsg" class="alert alert-danger">
+    {{ errorMsg }}
+  </div>
+
+  <table *ngIf="!loading && payments.length > 0" class="table table-striped">
+    <thead class="table-dark">
+    <tr>
+      <th>ID</th>
+      <th>Type</th>
+      <th>Amount (€)</th>
+      <th>Date</th>
+      <th>Status</th>
+      <th>Receipt</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let p of payments">
+      <td>{{ p.id }}</td>
+      <td>{{ p.paymentType }}</td>
+      <td>{{ p.amount | number: '1.2-2' }}</td>
+      <td>{{ p.timestamp | date: 'short' }}</td>
+      <td>
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-success': p.approved,
+              'bg-warning': !p.approved
+            }"
+          >
+            {{ p.approved ? 'Approved' : 'Pending' }}
+          </span>
+      </td>
+      <td>
+        <button
+          class="btn btn-sm btn-outline-primary"
+          (click)="viewReceipt(p)"
+        >
+          View Receipt
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && payments.length === 0" class="alert alert-info">
+    No payments found for this event.
+  </div>
+</div>
+
+<!-- Receipt Modal -->
+<div
+  class="modal fade"
+  [class.show]="showModal"
+  [style.display]="showModal ? 'block' : 'none'"
+  tabindex="-1"
+  role="dialog"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Receipt Image</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img
+          *ngIf="modalImageUrl"
+          [src]="modalImageUrl"
+          alt="Receipt"
+          class="img-fluid"
+        />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="showModal"
+    class="modal-backdrop fade show"
+    (click)="closeModal()"
+  ></div>
+</div>
